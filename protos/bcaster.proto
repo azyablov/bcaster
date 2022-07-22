@@ -1,0 +1,39 @@
+syntax = "proto3";
+
+option go_package = "github.com/azyablov/bcaster/protos/bcaster";
+package bcaster;
+
+enum MsgState {
+    ENQUEUED = 0;
+    DEQUEUED = 1;
+}
+
+message ShortMsg {
+    string msg = 1;
+    MsgState state = 2; 
+    reserved 3 to 5; /* to, delivery timeout, reply required*/
+}
+
+message RegistrationRequest {
+    string name = 1;
+}
+
+message RegistrationAccept {
+    string name = 1;
+    int32 timeout = 2;
+}
+
+message DeliveryStatus {
+    bool enq = 1;
+}
+
+message DeliveryRequest {}
+
+service BCaster {
+    rpc SendShortMsg (ShortMsg) returns (DeliveryStatus) {}
+
+    rpc RecvShortMsg (DeliveryRequest) returns(ShortMsg) {}
+
+    rpc RegisterClient(RegistrationRequest) returns(RegistrationAccept) {}
+}
+
